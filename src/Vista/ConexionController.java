@@ -23,6 +23,12 @@ public class ConexionController implements Initializable {
     private Button BTNinicio_sesion;
     @FXML
     private TextField TXTcontraseña;
+    @FXML
+    private TextField TXTusuario;
+    @FXML
+    private TextField TXTpuerto;
+    @FXML
+    private TextField TXTurl;
 
     /**
      * Initializes the controller class.
