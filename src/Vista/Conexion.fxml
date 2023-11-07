@@ -22,13 +22,13 @@
                </font>
             </Button>
             <TextField fx:id="TXTcontraseña" layoutX="183.0" layoutY="241.0" />
-            <Label layoutX="110.0" layoutY="245.0" text="Contraseña" />
+            <Label layoutX="109.0" layoutY="245.0" text="Contraseña" />
             <Label layoutX="119.0" layoutY="204.0" text="Usuario" />
             <TextField fx:id="TXTusuario" layoutX="183.0" layoutY="200.0" />
             <Label layoutX="122.0" layoutY="162.0" text="Puerto" />
-            <Label layoutX="129.0" layoutY="126.0" text="URL" />
+            <Label layoutX="118.0" layoutY="126.0" text="Servidor" />
             <TextField fx:id="TXTpuerto" layoutX="183.0" layoutY="158.0" />
-            <TextField fx:id="TXTurl" layoutX="183.0" layoutY="122.0" />
+            <TextField fx:id="TXTserver" layoutX="183.0" layoutY="122.0" />
          </children>
       </Pane>
    </children>

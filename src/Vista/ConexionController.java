@@ -28,7 +28,7 @@ public class ConexionController implements Initializable {
     @FXML
     private TextField TXTpuerto;
     @FXML
-    private TextField TXTurl;
+    private TextField TXTserver;
 
     /**
      * Initializes the controller class.
@@ -41,5 +41,5 @@ public class ConexionController implements Initializable {
     @FXML
     private void inicio_sesion(ActionEvent event) {
     }
-    
+      
 }

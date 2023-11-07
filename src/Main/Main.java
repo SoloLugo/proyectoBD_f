@@ -15,8 +15,9 @@ import javafx.stage.Stage;
 
 public class Main extends Application{
     
-    String servidor = "";
-    String puerto = "";
+    //cambiar eso para que cuadre.
+    String servidor = "localhost";
+    String puerto = "3306";
     String user = "root";
     String Password = "miamala2";
     String URL = "jdbc:mysql://"+servidor+":"+puerto;
@@ -33,8 +34,6 @@ public class Main extends Application{
     public Main() {
     }
     
-    
-    
     public Connection conectar(){
         try {
             Class.forName(driver);
@@ -42,7 +41,7 @@ public class Main extends Application{
             System.out.println("Se conecto a "+URL);
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("No se conecto a "+URL);
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         return cx;
     }
@@ -58,5 +57,5 @@ public class Main extends Application{
         ventana.show();
     }
 
-    
+  
 }
