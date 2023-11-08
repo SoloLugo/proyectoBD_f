@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="546.0" style="-fx-background-color: #110F8C;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Vista.ConexionController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="546.0" style="-fx-background-color: #110F8C;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Vista.ConexionController">
    <children>
       <Pane layoutX="16.0" layoutY="13.0" prefHeight="374.0" prefWidth="514.0" style="-fx-background-color: #6DD3FF;">
          <children>
@@ -16,7 +16,7 @@
                   <Font size="36.0" />
                </font>
             </Label>
-            <Button fx:id="BTNinicio_sesion" layoutX="186.0" layoutY="292.0" mnemonicParsing="false" onAction="#inicio_sesion" prefHeight="38.0" prefWidth="143.0" text="Iniciar Sesión">
+            <Button id="botonrequest" fx:id="BTNinicio_sesion" layoutX="186.0" layoutY="292.0" mnemonicParsing="false" onAction="#inicio_sesion" prefHeight="38.0" prefWidth="143.0" text="Iniciar Sesión">
                <font>
                   <Font size="18.0" />
                </font>

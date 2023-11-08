@@ -5,6 +5,9 @@
 package Vista;
 
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,6 +32,13 @@ public class ConexionController implements Initializable {
     private TextField TXTpuerto;
     @FXML
     private TextField TXTserver;
+    String servidor = "localhost";
+    String puerto = "3306";
+    String user = "root";
+    String Password = "Do517728S312$";
+    String URL = "jdbc:mysql://"+servidor+":"+puerto;
+    String driver = "com.mysql.cj.jdbc.Driver";
+    Connection cx;
 
     /**
      * Initializes the controller class.
@@ -39,7 +49,16 @@ public class ConexionController implements Initializable {
     }    
 
     @FXML
-    private void inicio_sesion(ActionEvent event) {
+    private Connection inicio_sesion(ActionEvent event) {
+        try {
+            Class.forName(driver);
+            cx = (Connection) DriverManager.getConnection(URL , user, Password);
+            System.out.println("Se conecto a "+URL);
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.out.println("No se conecto a "+URL);
+            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return cx;
     }
       
 }
