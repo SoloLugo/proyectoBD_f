@@ -32,11 +32,7 @@ public class ConexionController implements Initializable {
     private TextField TXTpuerto;
     @FXML
     private TextField TXTserver;
-    String servidor = "localhost";
-    String puerto = "3306";
-    String user = "root";
-    String Password = "Do517728S312$";
-    String URL = "jdbc:mysql://"+servidor+":"+puerto;
+ 
     String driver = "com.mysql.cj.jdbc.Driver";
     Connection cx;
 
@@ -50,6 +46,11 @@ public class ConexionController implements Initializable {
 
     @FXML
     private Connection inicio_sesion(ActionEvent event) {
+            String servidor = this.TXTserver.getText();
+            String puerto = this.TXTpuerto.getText(); //3306
+            String user = this.TXTusuario.getText();
+            String Password = this.TXTcontraseña.getText();
+            String URL = "jdbc:mysql://"+servidor+":"+puerto;
         try {
             Class.forName(driver);
             cx = (Connection) DriverManager.getConnection(URL , user, Password);

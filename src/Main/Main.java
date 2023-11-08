@@ -1,11 +1,7 @@
 
 package Main;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,17 +16,9 @@ public class Main extends Application{
     
     public static void main(String[] args)
     {
-        Main conexion = new Main();
-        conexion.conectar();
         launch(args);
     }
-
-    public Main() {
-    }
-    
-    public void conectar(){
-        
-    }
+   
     
     @Override
     public void start(Stage ventana) throws Exception {
