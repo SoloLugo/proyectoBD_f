@@ -41,7 +41,7 @@ public class control {
         Stage myStage;
         myStage = (Stage)panel.getScene().getWindow();
         myStage.close();
-        this.conexionSQL();
+        /*this.conexionSQL();*/
     }
     public void volver(ActionEvent event, String ubicacion, String titulo, Pane panel) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ubicacion));
@@ -56,64 +56,65 @@ public class control {
         myStage.close();
     }
     
-    public Connection conexionSQL() throws ClassNotFoundException, SQLException{
-        
-        ArrayList<InicioSesion> temp=this.getTodos();
-        String url = null,driver = null,user = null,password = null;
-        for (InicioSesion car: temp){
-            url = car.getUrl();
-            driver = car.getDriver();
-            user = car.getUser();
-            password = car.getPassword();
-        }
-        
-        try {
-            Class.forName(driver);
-            cx = (Connection) DriverManager.getConnection(url , user, password);
-            System.out.println("Se conecto a "+url);
-        } catch (ClassNotFoundException | SQLException ex) {
-            System.out.println("No se conecto a "+url);
-            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return cx;
+    /*public Connection conexionSQL() throws ClassNotFoundException, SQLException{
+    
+    ArrayList<InicioSesion> temp=this.getTodos();
+    String url = null,driver = null,user = null,password = null;
+    for (InicioSesion car: temp){
+    url = car.getUrl();
+    driver = car.getDriver();
+    user = car.getUser();
+    password = car.getPassword();
     }
-    public ArrayList<InicioSesion> getTodos() {
-        ArrayList<InicioSesion> temp= new ArrayList();
-        FileReader file;
-        BufferedReader br;
-        String registro;
-        try {
-            file=new FileReader(this.ruta);
-            br = new BufferedReader(file);
-            while ((registro = br.readLine()) != null && registro.length()!=0) {
-                String[] c=registro.split(",");
-                InicioSesion car=new InicioSesion(c[0],c[1],c[2],c[3]);
-                temp.add(car);
-            }
-        }
-        catch (IOException ioe){
-            System.exit(1);
-        }
-        return temp;
+    
+    try {
+    Class.forName(driver);
+    cx = (Connection) DriverManager.getConnection(url , user, password);
+    System.out.println("Se conecto a "+url);
+    } catch (ClassNotFoundException | SQLException ex) {
+    System.out.println("No se conecto a "+url);
+    //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
     }
+    return cx;
+    }*/
+    
+    /*public ArrayList<InicioSesion> getTodos() {
+    ArrayList<InicioSesion> temp= new ArrayList();
+    FileReader file;
+    BufferedReader br;
+    String registro;
+    try {
+    file=new FileReader(this.ruta);
+    br = new BufferedReader(file);
+    while ((registro = br.readLine()) != null && registro.length()!=0) {
+    String[] c=registro.split(",");
+    InicioSesion car=new InicioSesion(c[0],c[1],c[2],c[3]);
+    temp.add(car);
+    }
+    }
+    catch (IOException ioe){
+    System.exit(1);
+    }
+    return temp;
+    }*/
 
     private void verificaArchivo()
     {
-        try{
-            File filex = new File(this.ruta);
-            if(!filex.exists())
-                filex.createNewFile();
-            else{
-                filex.deleteOnExit();
-            }
-        }
-        catch (IOException ex){
-            Alert msg = new Alert(Alert.AlertType.ERROR);
-            msg.setHeaderText(null);
-            msg.setTitle("ERROR");
-            msg.setContentText("Fallo buscando ruta del archivo");
-            msg.showAndWait();
-        }
+    try{
+    File filex = new File(this.ruta);
+    if(!filex.exists())
+    filex.createNewFile();
+    else{
+    filex.deleteOnExit();
+    }
+    }
+    catch (IOException ex){
+    Alert msg = new Alert(Alert.AlertType.ERROR);
+    msg.setHeaderText(null);
+    msg.setTitle("ERROR");
+    msg.setContentText("Fallo buscando ruta del archivo");
+    msg.showAndWait();
+    }
     }
     
 }
