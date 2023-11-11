@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
 import static javafx.collections.FXCollections.observableArrayList;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -26,6 +27,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 /**
@@ -36,9 +38,9 @@ import javafx.scene.layout.AnchorPane;
 public class PrincipalController implements Initializable {
 
     @FXML
-    private ComboBox<?> CMB_BasesDatos;
+    private ComboBox<String> CMB_BasesDatos = new ComboBox<String>();
     @FXML
-    private ComboBox<?> CMB_Tablas;
+    private ComboBox<String> CMB_Tablas = new ComboBox<String>();
     @FXML
     private Button Btn_MostrarTabla;
     @FXML
@@ -52,7 +54,7 @@ public class PrincipalController implements Initializable {
     @FXML
     private AnchorPane VentanaBD;
     
-    Connection cx;
+    private Connection cx;
     InicioSesion is;
     private final String ruta;
     /**
@@ -64,7 +66,8 @@ public class PrincipalController implements Initializable {
     }    
 
     @FXML
-    private void BasesDatos(ActionEvent event) {
+    private void BasesDatos(ActionEvent event) throws SQLException {
+          
     }
 
     @FXML
@@ -105,14 +108,15 @@ public class PrincipalController implements Initializable {
         try {
             Class.forName(driver);
             cx = (Connection) DriverManager.getConnection(url , user, password);
-            Statement st = cx.createStatement();
-            ResultSet rs = st.executeQuery("show databases;");
+            /*Statement st = cx.createStatement();
+            ResultSet rs = st.executeQuery("show databases;");*/
             System.out.println("Se conecto a "+url);
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("No se conecto a "+url);
             //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         return cx;
+        
     }
     public ArrayList<InicioSesion> getTodos() {
         ArrayList<InicioSesion> temp= new ArrayList();
@@ -156,7 +160,27 @@ public class PrincipalController implements Initializable {
     public PrincipalController() throws ClassNotFoundException, SQLException {
         this.ruta = "./src/Temporal/temp.txt";
         this.verificaArchivo();
-        this.conexionSQL();
+        try {
+            System.out.println("Antes de llamar a conexionSQL");
+            this.conexionSQL();
+            System.out.println("Después de llamar a conexionSQL");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void agregarBD(MouseEvent event) throws SQLException {
+        CMB_BasesDatos.getItems().clear();
+        Statement st = cx.createStatement();
+        ResultSet rs = st.executeQuery("show databases;");
+        System.out.println("Nombre bases de datos:");
+        while (rs.next()) {
+            String dbName = rs.getString(1);
+            System.out.println(dbName);
+            CMB_BasesDatos.getItems().add(dbName);
+        }
+          
     }
     
 }
