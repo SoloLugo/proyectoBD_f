@@ -1,94 +1,59 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
-package Vista;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.net.URL;
+package Main;
+
+import java.io.IOException;
 import Main.InicioSesion;
-import Main.control;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
-import static javafx.collections.FXCollections.observableArrayList;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
-/**
- * FXML Controller class
- *
- * @author rcort
- */
-public class PrincipalController implements Initializable {
+public class control {
 
-    @FXML
-    private ComboBox<?> CMB_BasesDatos;
-    @FXML
-    private ComboBox<?> CMB_Tablas;
-    @FXML
-    private Button Btn_MostrarTabla;
-    @FXML
-    private Button Btn_Crear;
-    @FXML
-    private Button Btn_Modificar;
-    @FXML
-    private Button Btn_Consultar;
-    @FXML
-    private Button Btn_Eliminar;
-    @FXML
-    private AnchorPane VentanaBD;
-    
     Connection cx;
-    InicioSesion is;
+    InicioSesion IS;
     private final String ruta;
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
 
-    @FXML
-    private void BasesDatos(ActionEvent event) {
+    public control() {
+        this.ruta = "./src/Temporal/temp.txt";
+        this.verificaArchivo();
     }
-
-    @FXML
-    private void Tablas(ActionEvent event) {
+    
+    public void cambiaVentana(String ubicacion, String titulo, AnchorPane panel) throws IOException, ClassNotFoundException, SQLException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(ubicacion));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setResizable(false);
+        stage.setTitle(titulo);
+        stage.setScene(scene);
+        stage.show();
+        Stage myStage;
+        myStage = (Stage)panel.getScene().getWindow();
+        myStage.close();
+        this.conexionSQL();
     }
-
-    @FXML
-    private void MostrarTabla(ActionEvent event) {
-    }
-
-    @FXML
-    private void Crear(ActionEvent event) {
-    }
-
-    @FXML
-    private void Modificar(ActionEvent event) {
-    }
-
-    @FXML
-    private void Consultar(ActionEvent event) {
-    }
-
-    @FXML
-    private void Eliminar(ActionEvent event) {
+    public void volver(ActionEvent event, String ubicacion, String titulo, Pane panel) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(ubicacion));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setResizable(false);
+        stage.setTitle(titulo);
+        stage.setScene(scene);
+        stage.show();
+        Stage myStage = (Stage)panel.getScene().getWindow();
+        myStage.close();
     }
     
     public Connection conexionSQL() throws ClassNotFoundException, SQLException{
@@ -105,8 +70,6 @@ public class PrincipalController implements Initializable {
         try {
             Class.forName(driver);
             cx = (Connection) DriverManager.getConnection(url , user, password);
-            Statement st = cx.createStatement();
-            ResultSet rs = st.executeQuery("show databases;");
             System.out.println("Se conecto a "+url);
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("No se conecto a "+url);
@@ -151,12 +114,6 @@ public class PrincipalController implements Initializable {
             msg.setContentText("Fallo buscando ruta del archivo");
             msg.showAndWait();
         }
-    }
-
-    public PrincipalController() throws ClassNotFoundException, SQLException {
-        this.ruta = "./src/Temporal/temp.txt";
-        this.verificaArchivo();
-        this.conexionSQL();
     }
     
 }
