@@ -8,8 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="634.0" style="-fx-background-color: #E50000;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19" fx:controller="Vista.PrincipalController">
+<AnchorPane id="AnchorPane" fx:id="VentanaBD" prefHeight="400.0" prefWidth="634.0" style="-fx-background-color: #E50000;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Vista.PrincipalController">
    <children>
       <Pane layoutX="14.0" layoutY="14.0" prefHeight="370.0" prefWidth="601.0" style="-fx-background-color: #FF7373;">
          <children>
