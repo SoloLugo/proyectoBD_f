@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.net.URL;
 import Main.InicioSesion;
 import Main.control;
+import com.mysql.cj.jdbc.DatabaseMetaData;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -181,6 +182,43 @@ public class PrincipalController implements Initializable {
             CMB_BasesDatos.getItems().add(dbName);
         }
           
+    }
+
+    @FXML
+    private void agregarTB(MouseEvent event) throws SQLException, ClassNotFoundException {
+        CMB_Tablas.getItems().clear();
+        String BD = CMB_BasesDatos.getValue();
+        Statement st = cx.createStatement();
+        ArrayList<InicioSesion> temp=this.getTodos();
+        String url1 = null,driver = null,user = null,password = null;
+        for (InicioSesion car: temp){
+            url1 = car.getUrl();
+            driver = car.getDriver();
+            user = car.getUser();
+            password = car.getPassword();
+        }
+        
+        String url2 = url1+"/"+BD;
+        System.out.println(url2);
+        
+        // Cargar el controlador JDBC
+        Class.forName(driver);
+        
+        // Establecer la conexión con la base de datos
+        Connection conexion = DriverManager.getConnection(url2, user, password);
+
+        // Ejecutar la consulta SQL para obtener el nombre de las tablas
+        String consultaSQL = "SHOW TABLES FROM " + BD;
+        ResultSet resultSet = st.executeQuery(consultaSQL);
+
+        // Mostrar el nombre de las tablas de la base de datos seleccionada
+        System.out.println("Tablas en la base de datos " + BD + ":");
+        while (resultSet.next()) {
+            String nombreTabla = resultSet.getString(1);
+            System.out.println(nombreTabla);
+            this.CMB_Tablas.getItems().add(nombreTabla);
+        }
+
     }
     
 }

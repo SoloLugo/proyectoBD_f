@@ -13,7 +13,7 @@
       <Pane layoutX="14.0" layoutY="14.0" prefHeight="370.0" prefWidth="601.0" style="-fx-background-color: #FF7373;">
          <children>
             <ComboBox fx:id="CMB_BasesDatos" layoutX="25.0" layoutY="38.0" onAction="#BasesDatos" onMouseClicked="#agregarBD" prefWidth="150.0" />
-            <ComboBox fx:id="CMB_Tablas" layoutX="195.0" layoutY="38.0" onAction="#Tablas" prefWidth="150.0" />
+            <ComboBox fx:id="CMB_Tablas" layoutX="195.0" layoutY="38.0" onAction="#Tablas" onMouseClicked="#agregarTB" prefWidth="150.0" />
             <Button fx:id="Btn_MostrarTabla" layoutX="428.0" layoutY="38.0" mnemonicParsing="false" onAction="#MostrarTabla" text="Mostrar Tabla" />
             <Label layoutX="56.0" layoutY="14.0" prefHeight="17.0" prefWidth="89.0" text="Bases de datos" />
             <Label layoutX="256.0" layoutY="14.0" prefHeight="17.0" prefWidth="89.0" text="Tablas" textAlignment="CENTER" />
