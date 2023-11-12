@@ -64,27 +64,14 @@ public class ConexionController extends control  implements Initializable {
 
     @FXML
     public Connection inicio_sesion(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
-            String servidor = this.TXTserver.getText();
-            String puerto = this.TXTpuerto.getText(); //3306
-            String user = this.TXTusuario.getText();
-            String Password = this.TXTcontraseña.getText();
-            String URL = "jdbc:mysql://"+servidor+":"+puerto;
-            InicioSesion IS = new InicioSesion(URL,driver,user,Password);
-            this.guarda(IS);
-            String ubicacion,titulo;
-            /*try {
-            Class.forName(driver);
-            cx = (Connection) DriverManager.getConnection(URL , user, Password);
-            System.out.println("Se conecto a "+URL);
-            
-            ubicacion = "/Vista/Principal.fxml";
-            titulo =servidor+":"+puerto;
-            supp.cambiaVentana(ubicacion,titulo,this.InicioSesion, URL, driver, user, Password);
-            } catch (ClassNotFoundException | SQLException ex) {
-            System.out.println("No se conecto a "+URL);
-            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return cx;*/
+        String servidor = this.TXTserver.getText();
+        String puerto = this.TXTpuerto.getText(); //3306
+        String user = this.TXTusuario.getText();
+        String Password = this.TXTcontraseña.getText();
+        String URL = "jdbc:mysql://"+servidor+":"+puerto;
+        InicioSesion IS = new InicioSesion(URL,driver,user,Password);
+        this.guarda(IS);
+        String ubicacion,titulo;
         
         ubicacion = "/Vista/Principal.fxml";
         titulo =servidor+":"+puerto;

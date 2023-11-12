@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import static javafx.collections.FXCollections.observableArrayList;
 import javafx.collections.ObservableList;
@@ -28,6 +29,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
@@ -55,9 +58,13 @@ public class PrincipalController implements Initializable {
     @FXML
     private AnchorPane VentanaBD;
     
+    private ObservableList<ObservableList<String>> data;
+    
     private Connection cx;
     InicioSesion is;
     private final String ruta;
+    @FXML
+    private TableView<ObservableList<String>> TBV_Contenido = new TableView<>();
     /**
      * Initializes the controller class.
      */
@@ -76,7 +83,9 @@ public class PrincipalController implements Initializable {
     }
 
     @FXML
-    private void MostrarTabla(ActionEvent event) {
+    private void MostrarTabla(ActionEvent event) throws SQLException, ClassNotFoundException{ 
+        this.MostrarTabla();
+
     }
 
     @FXML
@@ -160,6 +169,7 @@ public class PrincipalController implements Initializable {
 
     public PrincipalController() throws ClassNotFoundException, SQLException {
         this.ruta = "./src/Temporal/temp.txt";
+        this.TBV_Contenido.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         this.verificaArchivo();
         try {
             System.out.println("Antes de llamar a conexionSQL");
@@ -208,8 +218,7 @@ public class PrincipalController implements Initializable {
         Connection conexion = DriverManager.getConnection(url2, user, password);
 
         // Ejecutar la consulta SQL para obtener el nombre de las tablas
-        String consultaSQL = "SHOW TABLES FROM " + BD;
-        ResultSet resultSet = st.executeQuery(consultaSQL);
+        ResultSet resultSet = st.executeQuery("SHOW TABLES FROM " + BD);
 
         // Mostrar el nombre de las tablas de la base de datos seleccionada
         System.out.println("Tablas en la base de datos " + BD + ":");
@@ -218,7 +227,11 @@ public class PrincipalController implements Initializable {
             System.out.println(nombreTabla);
             this.CMB_Tablas.getItems().add(nombreTabla);
         }
+        
+    }
 
+    private void MostrarTabla() throws SQLException, ClassNotFoundException {
+        System.out.println("se muestra la base de datos en la tableview");
     }
     
 }

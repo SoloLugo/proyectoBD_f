@@ -76,9 +76,9 @@ public class control {
     //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
     }
     return cx;
-    }*/
+    }
     
-    /*public ArrayList<InicioSesion> getTodos() {
+    public ArrayList<InicioSesion> getTodos() {
     ArrayList<InicioSesion> temp= new ArrayList();
     FileReader file;
     BufferedReader br;
@@ -98,23 +98,22 @@ public class control {
     return temp;
     }*/
 
-    private void verificaArchivo()
-    {
+    private void verificaArchivo(){
     try{
-    File filex = new File(this.ruta);
-    if(!filex.exists())
-    filex.createNewFile();
-    else{
-    filex.deleteOnExit();
+        File filex = new File(this.ruta);
+        if(!filex.exists())
+            filex.createNewFile();
+        else{
+            filex.deleteOnExit();
     }
     }
     catch (IOException ex){
-    Alert msg = new Alert(Alert.AlertType.ERROR);
-    msg.setHeaderText(null);
-    msg.setTitle("ERROR");
-    msg.setContentText("Fallo buscando ruta del archivo");
-    msg.showAndWait();
-    }
+        Alert msg = new Alert(Alert.AlertType.ERROR);
+        msg.setHeaderText(null);
+        msg.setTitle("ERROR");
+        msg.setContentText("Fallo buscando ruta del archivo");
+        msg.showAndWait();
+        }   
     }
     
 }
