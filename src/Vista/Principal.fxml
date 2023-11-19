@@ -12,15 +12,15 @@
       <Pane layoutX="14.0" layoutY="14.0" prefHeight="370.0" prefWidth="601.0" style="-fx-background-color: #FF7373;">
          <children>
             <ComboBox fx:id="CMB_BasesDatos" layoutX="25.0" layoutY="38.0" onAction="#BasesDatos" onMouseClicked="#agregarBD" prefWidth="150.0" />
-            <ComboBox fx:id="CMB_Tablas" layoutX="195.0" layoutY="38.0" onAction="#Tablas" onMouseClicked="#agregarTB" prefWidth="150.0" />
+            <ComboBox fx:id="CMB_Tablas" layoutX="240.0" layoutY="38.0" onAction="#Tablas" onMouseClicked="#agregarTB" prefWidth="150.0" />
             <Button fx:id="Btn_MostrarTabla" layoutX="428.0" layoutY="38.0" mnemonicParsing="false" onAction="#MostrarTabla" text="Mostrar Tabla" />
             <Label layoutX="56.0" layoutY="14.0" prefHeight="17.0" prefWidth="89.0" text="Bases de datos" />
-            <Label layoutX="256.0" layoutY="14.0" prefHeight="17.0" prefWidth="89.0" text="Tablas" textAlignment="CENTER" />
-            <TableView fx:id="TBV_Contenido" layoutX="25.0" layoutY="106.0" prefHeight="200.0" prefWidth="299.0" />
-            <Button fx:id="Btn_Crear" layoutX="410.0" layoutY="130.0" mnemonicParsing="false" onAction="#Crear" prefHeight="25.0" prefWidth="127.0" text="Crear" />
-            <Button fx:id="Btn_Modificar" layoutX="412.0" layoutY="217.0" mnemonicParsing="false" onAction="#Modificar" prefHeight="25.0" prefWidth="127.0" text="Modificar" />
-            <Button fx:id="Btn_Consultar" layoutX="410.0" layoutY="173.0" mnemonicParsing="false" onAction="#Consultar" prefHeight="25.0" prefWidth="127.0" text="Consultar" />
-            <Button fx:id="Btn_Eliminar" layoutX="410.0" layoutY="257.0" mnemonicParsing="false" onAction="#Eliminar" prefHeight="25.0" prefWidth="127.0" text="Eliminar" />
+            <Label layoutX="301.0" layoutY="14.0" prefHeight="17.0" prefWidth="89.0" text="Tablas" textAlignment="CENTER" />
+            <TableView fx:id="TBV_Contenido" layoutX="25.0" layoutY="106.0" prefHeight="243.0" prefWidth="365.0" />
+            <Button fx:id="Btn_Crear" layoutX="428.0" layoutY="106.0" mnemonicParsing="false" onAction="#Crear" prefHeight="25.0" prefWidth="127.0" text="Agregar" />
+            <Button fx:id="Btn_Modificar" layoutX="427.0" layoutY="191.0" mnemonicParsing="false" onAction="#Modificar" prefHeight="25.0" prefWidth="127.0" text="Modificar" />
+            <Button fx:id="Btn_Consultar" layoutX="428.0" layoutY="324.0" mnemonicParsing="false" onAction="#Consultar" prefHeight="25.0" prefWidth="127.0" text="Consultas" />
+            <Button fx:id="Btn_Eliminar" layoutX="428.0" layoutY="149.0" mnemonicParsing="false" onAction="#Eliminar" prefHeight="25.0" prefWidth="127.0" text="Eliminar" />
          </children>
       </Pane>
    </children>

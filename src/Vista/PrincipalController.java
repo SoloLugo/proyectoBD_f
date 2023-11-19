@@ -1,14 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package Vista;
+
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.net.URL;
 import Main.InicioSesion;
 import Main.control;
 import com.mysql.cj.jdbc.DatabaseMetaData;
+import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -19,6 +17,8 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.Scanner;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import static javafx.collections.FXCollections.observableArrayList;
@@ -33,6 +33,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  * FXML Controller class
@@ -61,8 +63,12 @@ public class PrincipalController implements Initializable {
     private ObservableList<ObservableList<String>> data;
     
     private Connection cx;
+    private String url2;
+    private String url1 = null,driver = null,user = null,password = null;
     InicioSesion is;
     private final String ruta;
+    private ResultSet rs;
+    private Statement st;
     @FXML
     private TableView<ObservableList<String>> TBV_Contenido = new TableView<>();
     /**
@@ -89,11 +95,13 @@ public class PrincipalController implements Initializable {
     }
 
     @FXML
-    private void Crear(ActionEvent event) {
+    private void Crear(ActionEvent event) throws SQLException {
+        this.AgregarDatos();
     }
 
     @FXML
-    private void Modificar(ActionEvent event) {
+    private void Modificar(ActionEvent event) throws SQLException {
+        
     }
 
     @FXML
@@ -101,7 +109,8 @@ public class PrincipalController implements Initializable {
     }
 
     @FXML
-    private void Eliminar(ActionEvent event) {
+    private void Eliminar(ActionEvent event) throws SQLException {
+        this.EliminarDatos();
     }
     
     public Connection conexionSQL() throws ClassNotFoundException, SQLException{
@@ -183,12 +192,12 @@ public class PrincipalController implements Initializable {
     @FXML
     private void agregarBD(MouseEvent event) throws SQLException {
         CMB_BasesDatos.getItems().clear();
-        Statement st = cx.createStatement();
-        ResultSet rs = st.executeQuery("show databases;");
-        System.out.println("Nombre bases de datos:");
+        st = cx.createStatement();
+        rs = st.executeQuery("show databases;");
+        /*System.out.println("Nombre bases de datos:");*/
         while (rs.next()) {
             String dbName = rs.getString(1);
-            System.out.println(dbName);
+            /*System.out.println(dbName);*/
             CMB_BasesDatos.getItems().add(dbName);
         }
           
@@ -198,9 +207,8 @@ public class PrincipalController implements Initializable {
     private void agregarTB(MouseEvent event) throws SQLException, ClassNotFoundException {
         CMB_Tablas.getItems().clear();
         String BD = CMB_BasesDatos.getValue();
-        Statement st = cx.createStatement();
+        st = cx.createStatement();
         ArrayList<InicioSesion> temp=this.getTodos();
-        String url1 = null,driver = null,user = null,password = null;
         for (InicioSesion car: temp){
             url1 = car.getUrl();
             driver = car.getDriver();
@@ -208,30 +216,108 @@ public class PrincipalController implements Initializable {
             password = car.getPassword();
         }
         
-        String url2 = url1+"/"+BD;
+        url2 = url1+"/"+BD;
+        
         System.out.println(url2);
-        
-        // Cargar el controlador JDBC
+
         Class.forName(driver);
-        
-        // Establecer la conexión con la base de datos
-        Connection conexion = DriverManager.getConnection(url2, user, password);
 
-        // Ejecutar la consulta SQL para obtener el nombre de las tablas
-        ResultSet resultSet = st.executeQuery("SHOW TABLES FROM " + BD);
+        cx = DriverManager.getConnection(url2, user, password);
 
-        // Mostrar el nombre de las tablas de la base de datos seleccionada
-        System.out.println("Tablas en la base de datos " + BD + ":");
-        while (resultSet.next()) {
-            String nombreTabla = resultSet.getString(1);
-            System.out.println(nombreTabla);
+        rs = st.executeQuery("SHOW TABLES FROM " + BD);
+
+        /*System.out.println("Tablas en la base de datos " + BD + ":");*/
+        while (rs.next()) {
+            String nombreTabla = rs.getString(1);
+            /*System.out.println(nombreTabla);*/
             this.CMB_Tablas.getItems().add(nombreTabla);
         }
-        
+         
     }
 
-    private void MostrarTabla() throws SQLException, ClassNotFoundException {
-        System.out.println("se muestra la base de datos en la tableview");
+    private void MostrarTabla() throws SQLException {
+        Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);
+        st = cx1.createStatement();
+        rs = st.executeQuery("SELECT * FROM " + CMB_Tablas.getValue());
+        TBV_Contenido.getColumns().clear();
+        if (rs.next()) {
+            data = FXCollections.observableArrayList();
+
+            for (int i = 0; i < rs.getMetaData().getColumnCount(); i++) {
+                final int j = i;
+                TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+                col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
+                TBV_Contenido.getColumns().add(col);
+            }
+
+            do {
+                ObservableList<String> row = FXCollections.observableArrayList();
+                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+                    row.add(rs.getString(i));
+                }
+                data.add(row);
+            } while (rs.next());
+
+            TBV_Contenido.setItems(data);
+        }
+         
     }
     
-}
+    private void EliminarDatos() throws SQLException{
+        Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);
+        DatabaseMetaData metaData = (DatabaseMetaData) cx1.getMetaData();
+        ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, CMB_Tablas.getValue());
+        
+        String valorELM = JOptionPane.showInputDialog(null, "Ingresa el valor de la PK:");
+
+        if (primaryKeys.next()) {
+            String columnaPrimaryKey = primaryKeys.getString("COLUMN_NAME");
+            Statement st = cx1.createStatement();
+            int Eliminar = st.executeUpdate("DELETE FROM " + CMB_Tablas.getValue() + " WHERE " + columnaPrimaryKey + " = '" + valorELM + "'");
+            st.close();
+            System.out.println("Datos Eliminados");
+        } else {
+            JOptionPane.showMessageDialog(null, "ERROR" + CMB_Tablas.getValue());
+        }
+    }
+    
+    private void AgregarDatos() throws SQLException{
+        Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);
+        DatabaseMetaData metaData = (DatabaseMetaData) cx1.getMetaData();
+        ResultSet Columnas = metaData.getColumns(null, null, CMB_Tablas.getValue(), null);
+
+        ArrayList<String> nameColumnas = new ArrayList<>();
+        while (Columnas.next()) {
+            String Columna = Columnas.getString("COLUMN_NAME");
+            nameColumnas.add(Columna);
+        }
+        Columnas.close();
+
+        // Mostrar JOptionPane para cada columna de la tabla
+        String[] valores = new String[nameColumnas.size()];
+        for (int i = 0; i < nameColumnas.size(); i++) {
+            String valor = JOptionPane.showInputDialog(null, "Ingrese valor para " + nameColumnas.get(i));
+            if (valor.isEmpty()) {
+                valores[i] = null; // Si el valor está en blanco, asignar null
+            } else {
+                valores[i] = "'" + valor + "'"; // Si se ingresa un valor, agregar comillas simples
+            }
+        }
+
+        // Construir la consulta de inserción utilizando los nombres y valores obtenidos
+        StringBuilder insertQuery = new StringBuilder("INSERT INTO " + CMB_Tablas.getValue() + " VALUES (");
+        for (int i = 0; i < valores.length; i++) {
+            insertQuery.append(valores[i]);
+            if (i != valores.length - 1) {
+                insertQuery.append(", ");
+            }
+        }
+        insertQuery.append(")");
+
+        // Ejecutar la consulta de inserción
+        Statement st = cx1.createStatement();
+        st.executeUpdate(insertQuery.toString());
+        st.close();
+    }
+  }
+
