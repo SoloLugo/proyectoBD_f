@@ -21,6 +21,12 @@
             <Button fx:id="Btn_Modificar" layoutX="427.0" layoutY="191.0" mnemonicParsing="false" onAction="#Modificar" prefHeight="25.0" prefWidth="127.0" text="Modificar" />
             <Button fx:id="Btn_Consultar" layoutX="428.0" layoutY="324.0" mnemonicParsing="false" onAction="#Consultar" prefHeight="25.0" prefWidth="127.0" text="Consultas" />
             <Button fx:id="Btn_Eliminar" layoutX="428.0" layoutY="149.0" mnemonicParsing="false" onAction="#Eliminar" prefHeight="25.0" prefWidth="127.0" text="Eliminar" />
+            <Button fx:id="BTN_crearBD" layoutX="417.0" layoutY="247.0" mnemonicParsing="false" onAction="#crearBD" prefHeight="25.0" prefWidth="58.0" text="Crear" />
+            <Button fx:id="BTN_deleteBD" layoutX="417.0" layoutY="282.0" mnemonicParsing="false" onAction="#deleteBD" text="Eliminar" />
+            <Label layoutX="409.0" layoutY="226.0" text="Base de datos" />
+            <Button fx:id="BTN_crearTB" layoutX="510.0" layoutY="247.0" mnemonicParsing="false" onAction="#crearTB" prefHeight="25.0" prefWidth="58.0" text="Crear" />
+            <Button fx:id="BTN_deleteTB" layoutX="510.0" layoutY="282.0" mnemonicParsing="false" onAction="#deleteTB" text="Eliminar" />
+            <Label layoutX="522.0" layoutY="226.0" text="Tablas" />
          </children>
       </Pane>
    </children>

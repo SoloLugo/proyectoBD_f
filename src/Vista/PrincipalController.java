@@ -16,6 +16,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import javafx.beans.property.SimpleObjectProperty;
@@ -29,6 +30,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
@@ -67,10 +69,18 @@ public class PrincipalController implements Initializable {
     private String url1 = null,driver = null,user = null,password = null;
     InicioSesion is;
     private final String ruta;
-    private ResultSet rs;
-    private Statement st;
     @FXML
     private TableView<ObservableList<String>> TBV_Contenido = new TableView<>();
+    private RadioButton RBTN_BD1;
+    private RadioButton RBTN_TABLE;
+    @FXML
+    private Button BTN_crearBD;
+    @FXML
+    private Button BTN_deleteBD;
+    @FXML
+    private Button BTN_crearTB;
+    @FXML
+    private Button BTN_deleteTB;
     /**
      * Initializes the controller class.
      */
@@ -95,13 +105,13 @@ public class PrincipalController implements Initializable {
     }
 
     @FXML
-    private void Crear(ActionEvent event) throws SQLException {
+    private void Crear(ActionEvent event) throws SQLException, ClassNotFoundException {
         this.AgregarDatos();
     }
 
     @FXML
-    private void Modificar(ActionEvent event) throws SQLException {
-        
+    private void Modificar(ActionEvent event) throws SQLException, ClassNotFoundException {
+        this.ModificarDatos();
     }
 
     @FXML
@@ -109,7 +119,7 @@ public class PrincipalController implements Initializable {
     }
 
     @FXML
-    private void Eliminar(ActionEvent event) throws SQLException {
+    private void Eliminar(ActionEvent event) throws SQLException, ClassNotFoundException {
         this.EliminarDatos();
     }
     
@@ -191,6 +201,8 @@ public class PrincipalController implements Initializable {
 
     @FXML
     private void agregarBD(MouseEvent event) throws SQLException {
+        ResultSet rs;
+        Statement st;
         CMB_BasesDatos.getItems().clear();
         st = cx.createStatement();
         rs = st.executeQuery("show databases;");
@@ -205,7 +217,26 @@ public class PrincipalController implements Initializable {
 
     @FXML
     private void agregarTB(MouseEvent event) throws SQLException, ClassNotFoundException {
+        ResultSet rs;
+        Statement st;
         CMB_Tablas.getItems().clear();
+        String BD = CMB_BasesDatos.getValue();
+        this.conexionCX(cx);
+        st = cx.createStatement();
+        rs = st.executeQuery("SHOW TABLES FROM " + BD);
+
+        /*System.out.println("Tablas en la base de datos " + BD + ":");*/
+        while (rs.next()) {
+            String nombreTabla = rs.getString(1);
+            /*System.out.println(nombreTabla);*/
+            this.CMB_Tablas.getItems().add(nombreTabla);
+        }
+         
+    }
+
+    private void MostrarTabla() throws SQLException, ClassNotFoundException {
+        ResultSet rs;
+        Statement st;
         String BD = CMB_BasesDatos.getValue();
         st = cx.createStatement();
         ArrayList<InicioSesion> temp=this.getTodos();
@@ -223,21 +254,10 @@ public class PrincipalController implements Initializable {
         Class.forName(driver);
 
         cx = DriverManager.getConnection(url2, user, password);
-
-        rs = st.executeQuery("SHOW TABLES FROM " + BD);
-
-        /*System.out.println("Tablas en la base de datos " + BD + ":");*/
-        while (rs.next()) {
-            String nombreTabla = rs.getString(1);
-            /*System.out.println(nombreTabla);*/
-            this.CMB_Tablas.getItems().add(nombreTabla);
-        }
-         
-    }
-
-    private void MostrarTabla() throws SQLException {
-        Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);
-        st = cx1.createStatement();
+        
+        /*Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);*/
+        st = cx.createStatement();
+        
         rs = st.executeQuery("SELECT * FROM " + CMB_Tablas.getValue());
         TBV_Contenido.getColumns().clear();
         if (rs.next()) {
@@ -263,16 +283,17 @@ public class PrincipalController implements Initializable {
          
     }
     
-    private void EliminarDatos() throws SQLException{
-        Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);
-        DatabaseMetaData metaData = (DatabaseMetaData) cx1.getMetaData();
+    private void EliminarDatos() throws SQLException, ClassNotFoundException{
+        this.conexionCX(cx);
+        /*Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);*/
+        DatabaseMetaData metaData = (DatabaseMetaData) cx.getMetaData();
         ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, CMB_Tablas.getValue());
         
         String valorELM = JOptionPane.showInputDialog(null, "Ingresa el valor de la PK:");
 
         if (primaryKeys.next()) {
             String columnaPrimaryKey = primaryKeys.getString("COLUMN_NAME");
-            Statement st = cx1.createStatement();
+            Statement st = cx.createStatement();
             int Eliminar = st.executeUpdate("DELETE FROM " + CMB_Tablas.getValue() + " WHERE " + columnaPrimaryKey + " = '" + valorELM + "'");
             st.close();
             System.out.println("Datos Eliminados");
@@ -280,10 +301,29 @@ public class PrincipalController implements Initializable {
             JOptionPane.showMessageDialog(null, "ERROR" + CMB_Tablas.getValue());
         }
     }
-    
-    private void AgregarDatos() throws SQLException{
-        Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);
-        DatabaseMetaData metaData = (DatabaseMetaData) cx1.getMetaData();
+    private void ModificarDatos() throws SQLException, ClassNotFoundException{
+        this.conexionCX(cx);
+        /*Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);*/
+        DatabaseMetaData metaData = (DatabaseMetaData) cx.getMetaData();
+        ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, CMB_Tablas.getValue());
+        
+        String valorELM = JOptionPane.showInputDialog(null, "Ingresa el valor de la PK:");
+        
+        String query = JOptionPane.showInputDialog(null, "Ingresa el Query pls:");
+        if (primaryKeys.next()) {
+            String columnaPrimaryKey = primaryKeys.getString("COLUMN_NAME");
+            Statement st = cx.createStatement();
+            int modificar = st.executeUpdate(query);
+            st.close();
+            System.out.println("Datos modifaicados");
+            } else {
+            JOptionPane.showMessageDialog(null, "ERROR" + CMB_Tablas.getValue());
+        }
+    }
+    private void AgregarDatos() throws SQLException, ClassNotFoundException{
+        this.conexionCX(cx);
+        /*Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);*/
+        DatabaseMetaData metaData = (DatabaseMetaData) cx.getMetaData();
         ResultSet Columnas = metaData.getColumns(null, null, CMB_Tablas.getValue(), null);
 
         ArrayList<String> nameColumnas = new ArrayList<>();
@@ -315,9 +355,139 @@ public class PrincipalController implements Initializable {
         insertQuery.append(")");
 
         // Ejecutar la consulta de inserción
-        Statement st = cx1.createStatement();
+        Statement st = cx.createStatement();
         st.executeUpdate(insertQuery.toString());
         st.close();
+    }
+
+    @FXML
+    private void crearBD(ActionEvent event) throws ClassNotFoundException, SQLException {
+        ResultSet rs;
+        Statement st;
+        String BD = CMB_BasesDatos.getValue();
+        st = cx.createStatement();
+        ArrayList<InicioSesion> temp=this.getTodos();
+        for (InicioSesion car: temp){
+            url1 = car.getUrl();
+            driver = car.getDriver();
+            user = car.getUser();
+            password = car.getPassword();
+        }
+        
+        url2 = url1;
+        
+        System.out.println(url2);
+
+        Class.forName(driver);
+
+        cx = DriverManager.getConnection(url2, user, password);
+        String nombreBD = JOptionPane.showInputDialog(null, "ingrese el nombre de la base de datos:");
+        st.executeUpdate("create database "+nombreBD);
+    }
+
+    @FXML
+    private void deleteBD(ActionEvent event) throws ClassNotFoundException, SQLException {
+        ResultSet rs;
+        Statement st;
+        String BD = CMB_BasesDatos.getValue();
+        st = cx.createStatement();
+        ArrayList<InicioSesion> temp=this.getTodos();
+        for (InicioSesion car: temp){
+            url1 = car.getUrl();
+            driver = car.getDriver();
+            user = car.getUser();
+            password = car.getPassword();
+        }
+        
+        url2 = url1;
+        
+        System.out.println(url2);
+
+        Class.forName(driver);
+
+        cx = DriverManager.getConnection(url2, user, password);
+        String nombreBD = JOptionPane.showInputDialog(null, "ingrese el nombre de la base de datos:");
+        st.executeUpdate("drop database "+nombreBD);
+    }
+
+    @FXML
+    private void crearTB(ActionEvent event) throws SQLException, ClassNotFoundException {
+        this.conexionCX(cx);
+        Statement st = cx.createStatement();
+        String nombreTabla = JOptionPane.showInputDialog("Ingrese el nombre de la tabla:");
+        int columns = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el número de columnas:"));
+        String[] columnas = new String[columns];
+        for (int i = 0; i < columnas.length; i++) {
+            String columnName = JOptionPane.showInputDialog("Ingrese el nombre de la columna " + (i + 1) + ":");
+            columnas[i] = columnName;
+        }
+        System.out.println("Columnas: " + Arrays.toString(columnas));
+
+        // Build the CREATE TABLE query
+        StringBuilder queryCrearTabla = new StringBuilder("CREATE TABLE " + nombreTabla + " (");
+        for (int i = 0; i < columnas.length; i++) {
+            queryCrearTabla.append(columnas[i] + " VARCHAR(255)"); // Change VARCHAR(255) to the appropriate data type
+            if (i != columnas.length - 1) {
+                queryCrearTabla.append(", ");
+            }
+        }
+        queryCrearTabla.append(")");
+
+        // Execute the query
+        st.executeUpdate(queryCrearTabla.toString());
+
+        // Close the statement and connection
+        st.close();
+
+    }
+
+    @FXML
+    private void deleteTB(ActionEvent event) throws SQLException, ClassNotFoundException {
+        ResultSet rs;
+        Statement st;
+        String BD = CMB_BasesDatos.getValue();
+        st = cx.createStatement();
+        ArrayList<InicioSesion> temp=this.getTodos();
+        for (InicioSesion car: temp){
+            url1 = car.getUrl();
+            driver = car.getDriver();
+            user = car.getUser();
+            password = car.getPassword();
+        }
+        
+        url2 = url1+"/"+BD;
+        
+        System.out.println(url2);
+
+        Class.forName(driver);
+
+        cx = DriverManager.getConnection(url2, user, password);
+        String nombreTB = JOptionPane.showInputDialog(null, "ingrese el nombre de la tabla:");
+        st.executeUpdate("drop table "+nombreTB);
+    }
+    
+    private Connection conexionCX(Connection cx) throws SQLException, ClassNotFoundException{
+        ResultSet rs;
+        Statement st;
+        String BD = CMB_BasesDatos.getValue();
+        st = cx.createStatement();
+        ArrayList<InicioSesion> temp=this.getTodos();
+        for (InicioSesion car: temp){
+            url1 = car.getUrl();
+            driver = car.getDriver();
+            user = car.getUser();
+            password = car.getPassword();
+        }
+        
+        url2 = url1+"/"+BD;
+        
+        System.out.println(url2);
+
+        Class.forName(driver);
+
+        cx = DriverManager.getConnection(url2, user, password);
+        
+        return cx;
     }
   }
 
