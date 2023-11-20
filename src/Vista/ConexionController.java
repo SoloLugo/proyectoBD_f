@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
+
 package Vista;
 
 import Main.control;
@@ -27,12 +24,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javax.swing.JOptionPane;
 
-/**
- * FXML Controller class
- *
- * @author rcort
- */
+
 public class ConexionController extends control  implements Initializable {
 
     @FXML
@@ -54,31 +48,35 @@ public class ConexionController extends control  implements Initializable {
     @FXML
     private AnchorPane PanelAzul;
 
-    /**
-     * Initializes the controller class.
-     */
+ 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        
     }    
 
     @FXML
-    public Connection inicio_sesion(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
-        String servidor = this.TXTserver.getText();
-        String puerto = this.TXTpuerto.getText(); //3306
-        String user = this.TXTusuario.getText();
-        String Password = this.TXTcontraseña.getText();
-        String URL = "jdbc:mysql://"+servidor+":"+puerto;
-        InicioSesion IS = new InicioSesion(URL,driver,user,Password);
-        this.guarda(IS);
-        String ubicacion,titulo;
-        
-        ubicacion = "/Vista/Principal.fxml";
-        titulo =servidor+":"+puerto;
-        supp.cambiaVentana(ubicacion,titulo,this.PanelAzul);
-        return null;
-    }
-    
+    public Connection inicio_sesion(ActionEvent event) throws IOException {
+    String servidor = this.TXTserver.getText();
+    String puerto = this.TXTpuerto.getText(); //3306
+    String user = this.TXTusuario.getText();
+    String Password = this.TXTcontraseña.getText();
+    String ubicacion, titulo;
+    String URL = "jdbc:mysql://" + servidor + ":" + puerto;
+    InicioSesion IS = new InicioSesion(URL,driver,user,Password);
+    this.guarda(IS);
+       
+        try {
+            Class.forName(driver);
+            cx = (Connection) DriverManager.getConnection(URL, user, Password);
+            System.out.println("Se conecto a " + URL);
+            ubicacion = "/Vista/Principal.fxml";
+            titulo = servidor + ":" + puerto;
+            supp.cambiaVentana(ubicacion, titulo, this.PanelAzul);
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.out.println("No se conecto a " + URL);
+        }
+        return cx;
+}
     private void verificaArchivo()
     {
         try{
@@ -105,11 +103,7 @@ public class ConexionController extends control  implements Initializable {
             PrintWriter ps = new PrintWriter(fr);
             ps.println(IS);
             ps.close();
-            /*Alert msg = new Alert(Alert.AlertType.INFORMATION);
-            msg.setHeaderText(null);
-            msg.setTitle("INFORMATION  ");
-            msg.setContentText("El cliente ha sido guardado");
-            msg.showAndWait();*/
+            
         }
         catch (IOException ioe){
             Alert msg = new Alert(Alert.AlertType.ERROR);

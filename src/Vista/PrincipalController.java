@@ -13,10 +13,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import javafx.beans.property.SimpleObjectProperty;
@@ -32,17 +36,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-/**
- * FXML Controller class
- *
- * @author rcort
- */
+
 public class PrincipalController implements Initializable {
 
     @FXML
@@ -51,6 +52,8 @@ public class PrincipalController implements Initializable {
     private ComboBox<String> CMB_Tablas = new ComboBox<String>();
     @FXML
     private Button Btn_MostrarTabla;
+    @FXML
+    private Button Btn_MostrarEstructura;
     @FXML
     private Button Btn_Crear;
     @FXML
@@ -70,7 +73,7 @@ public class PrincipalController implements Initializable {
     InicioSesion is;
     private final String ruta;
     @FXML
-    private TableView<ObservableList<String>> TBV_Contenido = new TableView<>();
+    private TableView<Map<String, Object>> TBV_Contenido = new TableView<>();
     private RadioButton RBTN_BD1;
     private RadioButton RBTN_TABLE;
     @FXML
@@ -86,12 +89,14 @@ public class PrincipalController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        BTN_crearTB.setDisable(true);
+        BTN_deleteTB.setDisable(true);
     }    
 
     @FXML
     private void BasesDatos(ActionEvent event) throws SQLException {
-          
+          BTN_crearTB.setDisable(false);
+          BTN_deleteTB.setDisable(false);
     }
 
     @FXML
@@ -101,17 +106,31 @@ public class PrincipalController implements Initializable {
     @FXML
     private void MostrarTabla(ActionEvent event) throws SQLException, ClassNotFoundException{ 
         this.MostrarTabla();
+        Btn_Crear.setDisable(false);
+        Btn_Eliminar.setDisable(false);
+        Btn_Modificar.setDisable(false);
+
+    }
+    
+    @FXML
+    private void MostrarEstructura(ActionEvent event) throws SQLException, ClassNotFoundException{ 
+        this.mostrarEstTabla();
+        Btn_Crear.setDisable(true);
+        Btn_Eliminar.setDisable(true);
+        Btn_Modificar.setDisable(true);
 
     }
 
     @FXML
     private void Crear(ActionEvent event) throws SQLException, ClassNotFoundException {
         this.AgregarDatos();
+        this.MostrarTabla();
     }
 
     @FXML
     private void Modificar(ActionEvent event) throws SQLException, ClassNotFoundException {
         this.ModificarDatos();
+        this.MostrarTabla();
     }
 
     @FXML
@@ -121,6 +140,7 @@ public class PrincipalController implements Initializable {
     @FXML
     private void Eliminar(ActionEvent event) throws SQLException, ClassNotFoundException {
         this.EliminarDatos();
+        this.MostrarTabla();
     }
     
     public Connection conexionSQL() throws ClassNotFoundException, SQLException{
@@ -137,12 +157,11 @@ public class PrincipalController implements Initializable {
         try {
             Class.forName(driver);
             cx = (Connection) DriverManager.getConnection(url , user, password);
-            /*Statement st = cx.createStatement();
-            ResultSet rs = st.executeQuery("show databases;");*/
+            
             System.out.println("Se conecto a "+url);
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("No se conecto a "+url);
-            //Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+           
         }
         return cx;
         
@@ -206,12 +225,14 @@ public class PrincipalController implements Initializable {
         CMB_BasesDatos.getItems().clear();
         st = cx.createStatement();
         rs = st.executeQuery("show databases;");
-        /*System.out.println("Nombre bases de datos:");*/
+        
         while (rs.next()) {
             String dbName = rs.getString(1);
-            /*System.out.println(dbName);*/
+            
             CMB_BasesDatos.getItems().add(dbName);
         }
+        
+        
           
     }
 
@@ -225,7 +246,7 @@ public class PrincipalController implements Initializable {
         st = cx.createStatement();
         rs = st.executeQuery("SHOW TABLES FROM " + BD);
 
-        /*System.out.println("Tablas en la base de datos " + BD + ":");*/
+        
         while (rs.next()) {
             String nombreTabla = rs.getString(1);
             /*System.out.println(nombreTabla);*/
@@ -235,57 +256,66 @@ public class PrincipalController implements Initializable {
     }
 
     private void MostrarTabla() throws SQLException, ClassNotFoundException {
-        ResultSet rs;
-        Statement st;
-        String BD = CMB_BasesDatos.getValue();
-        st = cx.createStatement();
-        ArrayList<InicioSesion> temp=this.getTodos();
-        for (InicioSesion car: temp){
-            url1 = car.getUrl();
-            driver = car.getDriver();
-            user = car.getUser();
-            password = car.getPassword();
-        }
-        
-        url2 = url1+"/"+BD;
-        
-        System.out.println(url2);
+    ResultSet rs;
+Statement st;
+String BD = CMB_BasesDatos.getValue();
+st = cx.createStatement();
+ArrayList<InicioSesion> temp = this.getTodos();
 
-        Class.forName(driver);
+String url1 = "", driver = "", user = "", password = "";
+ TBV_Contenido.setEditable(true);
+ TBV_Contenido.getSelectionModel().setCellSelectionEnabled(true);
 
-        cx = DriverManager.getConnection(url2, user, password);
-        
-        /*Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);*/
-        st = cx.createStatement();
-        
-        rs = st.executeQuery("SELECT * FROM " + CMB_Tablas.getValue());
-        TBV_Contenido.getColumns().clear();
-        if (rs.next()) {
-            data = FXCollections.observableArrayList();
+// Obtenemos los datos de inicio de sesión
+for (InicioSesion car : temp) {
+    url1 = car.getUrl();
+    driver = car.getDriver();
+    user = car.getUser();
+    password = car.getPassword();
+}
 
-            for (int i = 0; i < rs.getMetaData().getColumnCount(); i++) {
-                final int j = i;
-                TableColumn<ObservableList<String>, String> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
-                col.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j)));
-                TBV_Contenido.getColumns().add(col);
-            }
+String url2 = url1 + "/" + BD;
+System.out.println(url2);
 
-            do {
-                ObservableList<String> row = FXCollections.observableArrayList();
-                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-                    row.add(rs.getString(i));
-                }
-                data.add(row);
-            } while (rs.next());
+Class.forName(driver);
 
-            TBV_Contenido.setItems(data);
-        }
-         
+cx = DriverManager.getConnection(url2, user, password);
+st = cx.createStatement();
+
+rs = st.executeQuery("SELECT * FROM " + CMB_Tablas.getValue());
+TBV_Contenido.getColumns().clear();
+
+if (rs.next()) {
+    
+    for (int i = 0; i < rs.getMetaData().getColumnCount(); i++) {
+        final int j = i;
+        TableColumn<Map<String, Object>, Object> col = new TableColumn<>(rs.getMetaData().getColumnName(i + 1));
+        col.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().get(col.getText())));
+        TBV_Contenido.getColumns().add(col);
     }
+
+    
+    ObservableList<Map<String, Object>> data = FXCollections.observableArrayList();
+    do {
+        Map<String, Object> row = new HashMap<>();
+        for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+            String columnName = rs.getMetaData().getColumnName(i);
+            Object columnValue = rs.getObject(i);
+            row.put(columnName, columnValue);
+        }
+        data.add(row);
+    } while (rs.next());
+
+    TBV_Contenido.setItems(data);
+}
+
+}
+    
+    
     
     private void EliminarDatos() throws SQLException, ClassNotFoundException{
         this.conexionCX(cx);
-        /*Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);*/
+        
         DatabaseMetaData metaData = (DatabaseMetaData) cx.getMetaData();
         ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, CMB_Tablas.getValue());
         
@@ -301,28 +331,44 @@ public class PrincipalController implements Initializable {
             JOptionPane.showMessageDialog(null, "ERROR" + CMB_Tablas.getValue());
         }
     }
-    private void ModificarDatos() throws SQLException, ClassNotFoundException{
-        this.conexionCX(cx);
-        /*Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);*/
-        DatabaseMetaData metaData = (DatabaseMetaData) cx.getMetaData();
-        ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, CMB_Tablas.getValue());
-        
-        String valorELM = JOptionPane.showInputDialog(null, "Ingresa el valor de la PK:");
-        
-        String query = JOptionPane.showInputDialog(null, "Ingresa el Query pls:");
-        if (primaryKeys.next()) {
-            String columnaPrimaryKey = primaryKeys.getString("COLUMN_NAME");
-            Statement st = cx.createStatement();
-            int modificar = st.executeUpdate(query);
-            st.close();
-            System.out.println("Datos modifaicados");
-            } else {
-            JOptionPane.showMessageDialog(null, "ERROR" + CMB_Tablas.getValue());
+    private void ModificarDatos() throws SQLException, ClassNotFoundException {
+    this.conexionCX(cx); 
+
+    DatabaseMetaData metaData = (DatabaseMetaData) cx.getMetaData();
+    ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, CMB_Tablas.getValue());
+
+    String valorPK = JOptionPane.showInputDialog(null, "Ingrese el valor de la clave primaria:");
+    String columnaAModificar = TBV_Contenido.getSelectionModel().getSelectedCells().get(0).getTableColumn().getText();
+    String nuevoValor = JOptionPane.showInputDialog(null, "Ingrese el nuevo valor:");
+
+    if (primaryKeys.next()) {
+        String queryModificacion = "UPDATE " + CMB_Tablas.getValue() +
+                " SET " + columnaAModificar + " = ? WHERE ";
+
+        do {
+            queryModificacion += primaryKeys.getString("COLUMN_NAME") + " = ?";
+        } while (primaryKeys.next());
+
+        PreparedStatement pstmt = cx.prepareStatement(queryModificacion);
+        pstmt.setString(1, nuevoValor);
+        pstmt.setString(2, valorPK);
+
+        int filasModificadas = pstmt.executeUpdate();
+
+        if (filasModificadas > 0) {
+            System.out.println("Datos modificados correctamente.");
+        } else {
+            System.out.println("No se realizaron modificaciones.");
         }
+
+        pstmt.close();
+    } else {
+        JOptionPane.showMessageDialog(null, "No se encontraron claves primarias para la tabla seleccionada.");
     }
+}
+
     private void AgregarDatos() throws SQLException, ClassNotFoundException{
         this.conexionCX(cx);
-        /*Connection cx1 = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + CMB_BasesDatos.getValue(), user, password);*/
         DatabaseMetaData metaData = (DatabaseMetaData) cx.getMetaData();
         ResultSet Columnas = metaData.getColumns(null, null, CMB_Tablas.getValue(), null);
 
@@ -333,7 +379,6 @@ public class PrincipalController implements Initializable {
         }
         Columnas.close();
 
-        // Mostrar JOptionPane para cada columna de la tabla
         String[] valores = new String[nameColumnas.size()];
         for (int i = 0; i < nameColumnas.size(); i++) {
             String valor = JOptionPane.showInputDialog(null, "Ingrese valor para " + nameColumnas.get(i));
@@ -344,7 +389,6 @@ public class PrincipalController implements Initializable {
             }
         }
 
-        // Construir la consulta de inserción utilizando los nombres y valores obtenidos
         StringBuilder insertQuery = new StringBuilder("INSERT INTO " + CMB_Tablas.getValue() + " VALUES (");
         for (int i = 0; i < valores.length; i++) {
             insertQuery.append(valores[i]);
@@ -354,7 +398,6 @@ public class PrincipalController implements Initializable {
         }
         insertQuery.append(")");
 
-        // Ejecutar la consulta de inserción
         Statement st = cx.createStatement();
         st.executeUpdate(insertQuery.toString());
         st.close();
@@ -423,7 +466,6 @@ public class PrincipalController implements Initializable {
         }
         System.out.println("Columnas: " + Arrays.toString(columnas));
 
-        // Build the CREATE TABLE query
         StringBuilder queryCrearTabla = new StringBuilder("CREATE TABLE " + nombreTabla + " (");
         for (int i = 0; i < columnas.length; i++) {
             queryCrearTabla.append(columnas[i] + " VARCHAR(255)"); // Change VARCHAR(255) to the appropriate data type
@@ -433,10 +475,8 @@ public class PrincipalController implements Initializable {
         }
         queryCrearTabla.append(")");
 
-        // Execute the query
         st.executeUpdate(queryCrearTabla.toString());
 
-        // Close the statement and connection
         st.close();
 
     }
@@ -466,6 +506,8 @@ public class PrincipalController implements Initializable {
         st.executeUpdate("drop table "+nombreTB);
     }
     
+    
+    
     private Connection conexionCX(Connection cx) throws SQLException, ClassNotFoundException{
         ResultSet rs;
         Statement st;
@@ -488,6 +530,66 @@ public class PrincipalController implements Initializable {
         cx = DriverManager.getConnection(url2, user, password);
         
         return cx;
+    }
+    
+   private void mostrarEstTabla() throws SQLException, ClassNotFoundException {
+     String nombreTabla = CMB_Tablas.getValue();
+        if (nombreTabla != null) {
+            Connection connection = cx;
+            if (connection != null) {
+                // Obtener los registros de la tabla
+                List<Map<String, Object>> registros2 = obtenerEstructura(CMB_BasesDatos.getValue(), nombreTabla);
+
+                // Crear una lista observable para los registros
+                ObservableList<Map<String, Object>> registrosObservable = FXCollections.observableArrayList(registros2);
+
+                // Limpiar las columnas existentes en la tabla
+                TBV_Contenido.getColumns().clear();
+
+                // Crear columnas dinámicamente basadas en los nombres de columna
+                for (String columnName : registros2.get(0).keySet()) {
+                    TableColumn<Map<String, Object>, Object> column = new TableColumn<>(columnName);
+                    column.setCellValueFactory(data -> new SimpleObjectProperty<>(data.getValue().get(columnName)));
+                    TBV_Contenido.getColumns().add(column);
+                }
+
+                TBV_Contenido.setItems(registrosObservable);
+            } else {
+                mostrarAlertaError("No se pudo establecer la conexión");
+            }
+        } 
+}
+   private List<Map<String, Object>> obtenerEstructura(String nombreBaseDatos, String nombreTabla) throws SQLException {
+        List<Map<String, Object>> Estructura = new ArrayList<>();
+        Connection connection = cx;
+        if (connection != null) {
+            String query = "DESCRIBE " + nombreBaseDatos + "." + nombreTabla;
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (resultSet.next()) {
+                Map<String, Object> registro = new HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnName = metaData.getColumnName(i);
+                    Object columnValue = resultSet.getObject(i);
+                    registro.put(columnName, columnValue);
+                }
+                Estructura.add(registro);
+            }
+        } else {
+            throw new SQLException("No se pudo establecer la conexión");
+        }
+        return Estructura;
+    }
+
+
+
+
+    private void mostrarAlertaError(String no_se_pudo_establecer_la_conexión) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
   }
 

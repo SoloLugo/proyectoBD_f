@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 
 public class Main extends Application{
     
-    //cambiar eso para que cuadre.
     InicioSesion IS;
     
     public static void main(String[] args)
@@ -27,7 +26,6 @@ public class Main extends Application{
         ventana.setScene(scene);
         ventana.setTitle("Ingrese Usuario");
         ventana.setResizable(false);
-        //ventana.setOnCloseRequest(event -> {event.consume();});
         ventana.show();
     }
 

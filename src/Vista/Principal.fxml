@@ -7,13 +7,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane id="AnchorPane" fx:id="VentanaBD" prefHeight="400.0" prefWidth="634.0" style="-fx-background-color: #E50000;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Vista.PrincipalController">
+<AnchorPane id="AnchorPane" fx:id="VentanaBD" prefHeight="400.0" prefWidth="634.0" style="-fx-background-color: #E50000;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Vista.PrincipalController">
    <children>
       <Pane layoutX="14.0" layoutY="14.0" prefHeight="370.0" prefWidth="601.0" style="-fx-background-color: #FF7373;">
          <children>
             <ComboBox fx:id="CMB_BasesDatos" layoutX="25.0" layoutY="38.0" onAction="#BasesDatos" onMouseClicked="#agregarBD" prefWidth="150.0" />
             <ComboBox fx:id="CMB_Tablas" layoutX="240.0" layoutY="38.0" onAction="#Tablas" onMouseClicked="#agregarTB" prefWidth="150.0" />
-            <Button fx:id="Btn_MostrarTabla" layoutX="428.0" layoutY="38.0" mnemonicParsing="false" onAction="#MostrarTabla" text="Mostrar Tabla" />
+            <Button fx:id="Btn_MostrarTabla" layoutX="445.0" layoutY="63.0" mnemonicParsing="false" onAction="#MostrarTabla" text="Mostrar Tabla" />
             <Label layoutX="56.0" layoutY="14.0" prefHeight="17.0" prefWidth="89.0" text="Bases de datos" />
             <Label layoutX="301.0" layoutY="14.0" prefHeight="17.0" prefWidth="89.0" text="Tablas" textAlignment="CENTER" />
             <TableView fx:id="TBV_Contenido" layoutX="25.0" layoutY="106.0" prefHeight="243.0" prefWidth="365.0" />
@@ -27,6 +27,7 @@
             <Button fx:id="BTN_crearTB" layoutX="510.0" layoutY="247.0" mnemonicParsing="false" onAction="#crearTB" prefHeight="25.0" prefWidth="58.0" text="Crear" />
             <Button fx:id="BTN_deleteTB" layoutX="510.0" layoutY="282.0" mnemonicParsing="false" onAction="#deleteTB" text="Eliminar" />
             <Label layoutX="522.0" layoutY="226.0" text="Tablas" />
+            <Button fx:id="Btn_MostrarEstructura" layoutX="434.0" layoutY="26.0" mnemonicParsing="false" onAction="#MostrarEstructura" text="Mostrar Estructura" />
          </children>
       </Pane>
    </children>
